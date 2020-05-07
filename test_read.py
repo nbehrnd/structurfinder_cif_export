@@ -34,16 +34,17 @@ model_number()
 
 def model_names():
     """ Determine the name of the structure entries in the set with ID. """
-    model_name_register = []
+    model_name = ""
 
-    c.execute('SELECT DATANAME FROM STRUCTURE')
-    data = c.fetchall()
-    for entry in data:
-        model_name = str(entry)[3:-3]
-        cif_model_entry = ''.join(['data_', model_name])
-        model_name_register.append(cif_model_entry)
+    if model_number > 0:
+        for ID in range(1, model_number + 1):
 
-    print(model_name_register)
+            c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(ID))
+            data = c.fetchall()
+            for entry in data:
+                model_name = str(entry)[3:-3]
+                cif_model_entry = ''.join(['{}: '.format(ID), 'data_', model_name])
+                print(cif_model_entry)
 
 
 model_names()
@@ -62,7 +63,7 @@ def model_unit_cell_dimensions():
         angle_gamma = ''.join(['_cell_angle_gamma ', str(line).split(", ")[7]])
 
 
-model_unit_cell_dimensions()
+# model_unit_cell_dimensions()
 
 
 def model_spacegroup():
@@ -75,7 +76,7 @@ def model_spacegroup():
         print("spacegroup: ", spacegroup_HM)
 
 
-model_spacegroup()
+# model_spacegroup()
 
 
 def model_symmetry_operations():
@@ -94,7 +95,7 @@ def model_symmetry_operations():
         print("symmetry_operations: ", symmetry_operations)
 
 
-model_symmetry_operations()
+# model_symmetry_operations()
 
 
 def model_atom_coordinates():
@@ -113,7 +114,7 @@ def model_atom_coordinates():
         print("atom_line: ", atom_line)
 
 
-model_atom_coordinates()
+# model_atom_coordinates()
 
 # close pointer and database file:
 c.close()
