@@ -136,7 +136,31 @@ for ID in range(1, model_number + 1):
 
 
 # ---- test end.
-def model_atom_coordinates():
+#def model_atom_coordinates():
+#    """ Retrieve atom label, atom type and atom coordinates _per model_ """
+#    if model_number > 0:
+#        for ID in range(1, model_number + 1):
+
+#            # Note a change a different db-definition of the model ID.
+#            c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
+#            data = c.fetchall()
+#            for line in data:
+#                atom_label = str(str(line).strip().split(', ')[2])[1:-1]
+#                atom_type = str(str(line).strip().split(', ')[3])[1:-1]
+
+#                atom_x = str(line).strip().split(', ')[4]
+#                atom_y = str(line).strip().split(', ')[5]
+#                atom_z = str(line).strip().split(', ')[6]
+
+#                atom_line = ' '.join([atom_label, atom_type, atom_x, atom_y, atom_z])
+#                print("ID, atom_line: ", ID, atom_line)
+
+
+## model_atom_coordinates()
+
+# ---- test start:
+
+def model_atom_coordinates_b():
     """ Retrieve atom label, atom type and atom coordinates _per model_ """
     if model_number > 0:
         for ID in range(1, model_number + 1):
@@ -156,7 +180,9 @@ def model_atom_coordinates():
                 print("ID, atom_line: ", ID, atom_line)
 
 
-# model_atom_coordinates()
+model_atom_coordinates_b()
+
+# --- test end.
 
 # close pointer and database file:
 c.close()
