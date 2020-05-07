@@ -95,10 +95,10 @@ def model_spacegroup_b(ID):
 # model_spacegroup_b()
 
 
-for ID in range(1, model_number + 1):
-    model_names_b(ID)
-    model_unit_cell_dimensions_b(ID)
-    model_spacegroup_b(ID)
+#for ID in range(1, model_number + 1):
+#    model_names_b(ID)
+#    model_unit_cell_dimensions_b(ID)
+#    model_spacegroup_b(ID)
     
 # ---- test end.
 
@@ -129,30 +129,33 @@ for ID in range(1, model_number + 1):
 
 # ---- test start:
 
-def model_symmetry_operations_b():
+def model_symmetry_operations_b(ID):
     """ Retrieve the symmetry operations """
-    if model_number > 0:
-        for ID in range(1, model_number + 1):
+#    if model_number > 0:
+#        for ID in range(1, model_number + 1):
 
-            symmetry_operations = []
-            c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
-            data = c.fetchall()
-            for line in data:
-                # isolation of the entry in the sqlite database:
-                operators = str(str(line).strip().split(', ')[8])[1:-1]
-        #         print("operators: ", operators)
+    symmetry_operations = []
+    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
+    data = c.fetchall()
+    for line in data:
+        # isolation of the entry in the sqlite database:
+        operators = str(str(line).strip().split(', ')[8])[1:-1]
+#         print("operators: ", operators)
 
-                # separation of the symmetry operations in this retrieved string:
-                symmetry_operations = operators.split('\\n')
-                print("\n len symmetry_operations: ", len(symmetry_operations))
-                print("ID, symmetry_operations: ", ID, symmetry_operations)
-                j = 1
-                for operation in symmetry_operations:
-                    print("{} {}".format(j, operation))
-                    j += 1
+        # separation of the symmetry operations in this retrieved string:
+        symmetry_operations = operators.split('\\n')
+        print("\n len symmetry_operations: ", len(symmetry_operations))
+        print("ID, symmetry_operations: ", ID, symmetry_operations)
+        j = 1
+        for operation in symmetry_operations:
+            print("{} {}".format(j, operation))
+            j += 1
 
-
-model_symmetry_operations_b()
+for ID in range(1, model_number + 1):
+    model_names_b(ID)
+    model_unit_cell_dimensions_b(ID)
+    model_spacegroup_b(ID)
+    model_symmetry_operations_b(ID)
 
 
 # ---- test end.
