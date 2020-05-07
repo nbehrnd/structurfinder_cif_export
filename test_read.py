@@ -32,14 +32,13 @@ def model_number():
 
 def model_names_b(ID):
     """ Determine the name of the structure entries in the set with ID. """
+    global model_name
     model_name = ""
     c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(ID))
-    data = c.fetchall()
-    for entry in data:
-        model_name = str(entry)[3:-3]
-        cif_model_entry = ''.join(['{}: '.format(ID), 'data_', model_name])
-        print(cif_model_entry)
-
+    data = c.fetchone()
+    model_name = str(data)[3:-3]
+    cif_model_entry = ''.join(['data_', model_name])
+    print(cif_model_entry)
 
 def model_unit_cell_dimensions_b(ID):
     """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
@@ -115,6 +114,7 @@ for ID in range(1, model_number + 1):
     model_spacegroup_b(ID)
     model_symmetry_operations_b(ID)
     model_atom_coordinates_b(ID)
+
 
 # close pointer and database file:
 c.close()
