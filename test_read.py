@@ -40,6 +40,11 @@ def model_names_b(ID):
     cif_model_entry = ''.join(['data_', model_name])
     print(cif_model_entry)
 
+    # keep track of the information retrieved from the sqlite database
+    global restore_register
+    restore_register = []
+    restore_register.append(cif_model_entry)
+
 def model_unit_cell_dimensions_b(ID):
     """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
 
