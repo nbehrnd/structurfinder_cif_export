@@ -62,6 +62,14 @@ def model_unit_cell_dimensions_b(ID):
         print("a, b, c: ", length_a, length_b, length_c)
         print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
 
+        restore_register.append(length_a)
+        restore_register.append(length_b)
+        restore_register.append(length_c)
+
+        restore_register.append(angle_alpha)
+        restore_register.append(angle_beta)
+        restore_register.append(angle_gamma)
+
 
 def model_spacegroup_b(ID):
     """ Readout the Hermann-Maguin spacegroup """
@@ -70,8 +78,10 @@ def model_spacegroup_b(ID):
     c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
     data = c.fetchall()
     for line in data:
-        spacegroup_HM = str(str(line).strip().split(', ')[3])[1:-1]
-        print("spacegroup: ", spacegroup_HM)
+        spacegroup_HM = str(line).strip().split(', ')[3]
+        cif_HM = ''.join(['_symmetry_space_group_name_H-M   ', spacegroup_HM])
+        restore_register.append(cif_HM)
+        restore_register.append(" ")
 
 
 def model_symmetry_operations_b(ID):
@@ -80,6 +90,12 @@ def model_symmetry_operations_b(ID):
     symmetry_operations = []
     c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
     data = c.fetchall()
+
+    # heading marker in the .cif file about the following loop:
+    restore_register.append("loop_")
+    restore_register.append("_symmetry_equiv_pos_site_id")
+    restore_register.append("_symmetry_equiv_pos_as_xyz")
+
     for line in data:
         # isolation of the entry in the sqlite database:
         operators = str(str(line).strip().split(', ')[8])[1:-1]
@@ -90,6 +106,7 @@ def model_symmetry_operations_b(ID):
         j = 1
         for operation in symmetry_operations:
             print("{} {}".format(j, operation))
+            restore_register.append("{} {}".format(j, operation))
             j += 1
 
 
@@ -99,6 +116,15 @@ def model_atom_coordinates_b(ID):
     # Note a change a different db-definition of the model ID.
     c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
     data = c.fetchall()
+
+    # heading marker in the .cif file about the following loop:
+    restore_register.append("\nloop_")
+    restore_register.append("_atom_site_label")
+    restore_register.append("_atom_site_type_symbol")
+    restore_register.append("_atom_site_fract_x")
+    restore_register.append("_atom_site_fract_y")    
+    restore_register.append("_atom_site_fract_z")        
+
     for line in data:
         atom_label = str(str(line).strip().split(', ')[2])[1:-1]
         atom_type = str(str(line).strip().split(', ')[3])[1:-1]
@@ -109,6 +135,14 @@ def model_atom_coordinates_b(ID):
 
         atom_line = ' '.join([atom_label, atom_type, atom_x, atom_y, atom_z])
         print(atom_line)
+        restore_register.append(atom_line)
+
+def restored_model(ID):
+    """ Write a minimal .cif file about the retrieved information. """
+    file_name = ''.join([model_name, '.cif'])
+    with open(file_name, mode="w") as newfile:
+        for entry in restore_register:
+            newfile.write("{}\n".format(entry))
 
 
 # action calls:
@@ -119,7 +153,7 @@ for ID in range(1, model_number + 1):
     model_spacegroup_b(ID)
     model_symmetry_operations_b(ID)
     model_atom_coordinates_b(ID)
-
+    restored_model(ID)
 
 # close pointer and database file:
 c.close()
