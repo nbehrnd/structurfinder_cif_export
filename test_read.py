@@ -30,7 +30,7 @@ def model_number():
     print("model_number: ", model_number)
 
 
-model_number()
+# model_number()
 
 def model_names():
     """ Determine the name of the structure entries in the set with ID. """
@@ -47,7 +47,7 @@ def model_names():
                 print(cif_model_entry)
 
 
-model_names()
+# model_names()
 
 def model_unit_cell_dimensions():
     """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
@@ -68,7 +68,7 @@ def model_unit_cell_dimensions():
 
                 print("ID; a, b, c: ", ID, length_a, length_b, length_c)
                 print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
-model_unit_cell_dimensions()
+# model_unit_cell_dimensions()
 
 
 def model_spacegroup():
@@ -84,7 +84,7 @@ def model_spacegroup():
                 print("ID; spacegroup: ", ID, spacegroup_HM)
 
 
-model_spacegroup()
+# model_spacegroup()
 
 
 def model_symmetry_operations():
@@ -95,15 +95,19 @@ def model_symmetry_operations():
     for line in data:
         # isolation of the entry in the sqlite database:
         operators = str(str(line).strip().split(', ')[8])[1:-1]
-        print("operators: ", operators)
+#         print("operators: ", operators)
 
         # separation of the symmetry operations in this retrieved string:
         symmetry_operations = operators.split('\\n')
-        print("len symmetry_operations: ", len(symmetry_operations))
+#         print("len symmetry_operations: ", len(symmetry_operations))
         print("symmetry_operations: ", symmetry_operations)
+        j = 1
+        for operation in symmetry_operations:
+            print("{} {}".format(j, operation))
+            j += 1
 
 
-# model_symmetry_operations()
+model_symmetry_operations()
 
 
 def model_atom_coordinates():
