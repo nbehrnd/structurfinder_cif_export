@@ -15,10 +15,30 @@
     default. """
 
 import sqlite3
+import sys
 
-conn = sqlite3.connect('two_data.sqlite')
-c = conn.cursor()
 
+# Safety guard, limiting the execution to Python 3.
+if sys.version_info > (3, 0):
+    pass
+else:
+    print("\nThe script's proper execution requires Python 3.")
+    print("Without change of any data, the script closes now.\n")
+    sys.exit()
+
+print("\nThis is test_read.py, attempting to extract a minimal .cif from")
+print("the .sqlite database written by the .cif Structurefinder by")
+print("Kratzert and Krossing.  It is a concept study, so features are")
+print("missing or buggy.  Deposit this Python 3 script in the same folder")
+print("as the closed .sqlite database file to work with , and run it from")
+print("the CLI.  Only standard modules Python 3 includes are used here.")
+print("\nAt any time, the program may be left with Ctrl + C.\n")
+print("Enter now the complete filename (with '.sqlite' extension) as there")
+print("is no tab-completion.")
+
+INPUT_FILE = input("Your input: ")
+CONN = sqlite3.connect(INPUT_FILE)
+c = CONN.cursor()
 
 def model_number():
     """ Determine the number of structure entries in the set. """
@@ -27,7 +47,7 @@ def model_number():
     c.execute('SELECT ID FROM STRUCTURE')
     data = c.fetchall()
     model_number = len(data)
-    print("model_number: ", model_number)
+    print(model_number, "model data to consider.\n")
 
 
 def model_names_b(ID):
@@ -38,7 +58,7 @@ def model_names_b(ID):
     data = c.fetchone()
     model_name = str(data)[3:-3]
     cif_model_entry = ''.join(['data_', model_name])
-    print(cif_model_entry)
+    print("Work on: ", cif_model_entry)
 
     # keep track of the information retrieved from the sqlite database
     global restore_register
@@ -59,8 +79,8 @@ def model_unit_cell_dimensions_b(ID):
         angle_beta = ''.join(['_cell_angle_beta ', str(line).split(", ")[6]])
         angle_gamma = ''.join(['_cell_angle_gamma ', str(line).split(", ")[7]])
 
-        print("a, b, c: ", length_a, length_b, length_c)
-        print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
+        # print("a, b, c: ", length_a, length_b, length_c)
+        # print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
 
         restore_register.append(length_a)
         restore_register.append(length_b)
@@ -72,7 +92,7 @@ def model_unit_cell_dimensions_b(ID):
 
 
 def model_spacegroup_b(ID):
-    """ Readout the Hermann-Maguin spacegroup """
+    """ Readout the Herman-Maguin space-group """
 
     spacegroup_HM = ""
     c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
@@ -105,7 +125,7 @@ def model_symmetry_operations_b(ID):
 #        print("symmetry_operations: ", symmetry_operations)
         j = 1
         for operation in symmetry_operations:
-            print("{} {}".format(j, operation))
+            # print("{} {}".format(j, operation))
             restore_register.append("{} {}".format(j, operation))
             j += 1
 
@@ -122,8 +142,8 @@ def model_atom_coordinates_b(ID):
     restore_register.append("_atom_site_label")
     restore_register.append("_atom_site_type_symbol")
     restore_register.append("_atom_site_fract_x")
-    restore_register.append("_atom_site_fract_y")    
-    restore_register.append("_atom_site_fract_z")        
+    restore_register.append("_atom_site_fract_y")
+    restore_register.append("_atom_site_fract_z")
 
     for line in data:
         atom_label = str(str(line).strip().split(', ')[2])[1:-1]
@@ -134,7 +154,7 @@ def model_atom_coordinates_b(ID):
         atom_z = str(line).strip().split(', ')[6]
 
         atom_line = ' '.join([atom_label, atom_type, atom_x, atom_y, atom_z])
-        print(atom_line)
+        # print(atom_line)
         restore_register.append(atom_line)
 
 def restored_model(ID):
@@ -157,4 +177,4 @@ for ID in range(1, model_number + 1):
 
 # close pointer and database file:
 c.close()
-conn.close()
+CONN.close()
