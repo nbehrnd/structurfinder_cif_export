@@ -62,8 +62,9 @@ def model_unit_cell_dimensions():
         angle_beta = ''.join(['_cell_angle_beta ', str(line).split(", ")[6]])
         angle_gamma = ''.join(['_cell_angle_gamma ', str(line).split(", ")[7]])
 
-
-# model_unit_cell_dimensions()
+        print("a, b, c: ", length_a, length_b, length_c)
+        print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
+model_unit_cell_dimensions()
 
 
 def model_spacegroup():
