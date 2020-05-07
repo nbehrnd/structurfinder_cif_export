@@ -30,10 +30,6 @@ def model_number():
     print("model_number: ", model_number)
 
 
-model_number()
-
-# ----  test start:
-
 def model_names_b(ID):
     """ Determine the name of the structure entries in the set with ID. """
     model_name = ""
@@ -44,12 +40,6 @@ def model_names_b(ID):
         cif_model_entry = ''.join(['{}: '.format(ID), 'data_', model_name])
         print(cif_model_entry)
 
-#for ID in range(1, model_number + 1):
-#    model_names_b(ID)
-
-# ----  test end.
-
-# ---- test start:
 
 def model_unit_cell_dimensions_b(ID):
     """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
@@ -69,20 +59,8 @@ def model_unit_cell_dimensions_b(ID):
         print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
 
 
-#for ID in range(1, model_number + 1):
-#    model_names_b(ID)
-#    model_unit_cell_dimensions_b(ID)
-
-# ---- test end.
-
-
-
-# ---- test start:
-
 def model_spacegroup_b(ID):
     """ Readout the Hermann-Maguin spacegroup """
-#    if model_number > 0:
-#        for ID in range(1, model_number + 1):
 
     spacegroup_HM = ""
     c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
@@ -92,24 +70,8 @@ def model_spacegroup_b(ID):
         print("ID; spacegroup: ", ID, spacegroup_HM)
 
 
-# model_spacegroup_b()
-
-
-#for ID in range(1, model_number + 1):
-#    model_names_b(ID)
-#    model_unit_cell_dimensions_b(ID)
-#    model_spacegroup_b(ID)
-    
-# ---- test end.
-
-
-
-# ---- test start:
-
 def model_symmetry_operations_b(ID):
     """ Retrieve the symmetry operations """
-#    if model_number > 0:
-#        for ID in range(1, model_number + 1):
 
     symmetry_operations = []
     c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
@@ -117,7 +79,6 @@ def model_symmetry_operations_b(ID):
     for line in data:
         # isolation of the entry in the sqlite database:
         operators = str(str(line).strip().split(', ')[8])[1:-1]
-#         print("operators: ", operators)
 
         # separation of the symmetry operations in this retrieved string:
         symmetry_operations = operators.split('\\n')
@@ -128,22 +89,9 @@ def model_symmetry_operations_b(ID):
             print("{} {}".format(j, operation))
             j += 1
 
-#for ID in range(1, model_number + 1):
-#    model_names_b(ID)
-#    model_unit_cell_dimensions_b(ID)
-#    model_spacegroup_b(ID)
-#    model_symmetry_operations_b(ID)
-
-
-# ---- test end.
-
-
-# ---- test start:
 
 def model_atom_coordinates_b(ID):
     """ Retrieve atom label, atom type and atom coordinates _per model_ """
-#    if model_number > 0:
-#        for ID in range(1, model_number + 1):
 
     # Note a change a different db-definition of the model ID.
     c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
@@ -159,14 +107,15 @@ def model_atom_coordinates_b(ID):
         atom_line = ' '.join([atom_label, atom_type, atom_x, atom_y, atom_z])
         print("ID, atom_line: ", ID, atom_line)
 
+
+# action calls:
+model_number()  # identify the number of models to consider
 for ID in range(1, model_number + 1):
     model_names_b(ID)
     model_unit_cell_dimensions_b(ID)
     model_spacegroup_b(ID)
     model_symmetry_operations_b(ID)
     model_atom_coordinates_b(ID)
-
-# --- test end.
 
 # close pointer and database file:
 c.close()
