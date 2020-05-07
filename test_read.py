@@ -129,7 +129,7 @@ def model_atom_coordinates():
         print("atom_line: ", atom_line)
 
 
-# model_atom_coordinates()
+model_atom_coordinates()
 
 # close pointer and database file:
 c.close()
