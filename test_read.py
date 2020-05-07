@@ -128,11 +128,11 @@ def model_symmetry_operations_b(ID):
             print("{} {}".format(j, operation))
             j += 1
 
-for ID in range(1, model_number + 1):
-    model_names_b(ID)
-    model_unit_cell_dimensions_b(ID)
-    model_spacegroup_b(ID)
-    model_symmetry_operations_b(ID)
+#for ID in range(1, model_number + 1):
+#    model_names_b(ID)
+#    model_unit_cell_dimensions_b(ID)
+#    model_spacegroup_b(ID)
+#    model_symmetry_operations_b(ID)
 
 
 # ---- test end.
@@ -160,27 +160,31 @@ for ID in range(1, model_number + 1):
 
 # ---- test start:
 
-def model_atom_coordinates_b():
+def model_atom_coordinates_b(ID):
     """ Retrieve atom label, atom type and atom coordinates _per model_ """
-    if model_number > 0:
-        for ID in range(1, model_number + 1):
+#    if model_number > 0:
+#        for ID in range(1, model_number + 1):
 
-            # Note a change a different db-definition of the model ID.
-            c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
-            data = c.fetchall()
-            for line in data:
-                atom_label = str(str(line).strip().split(', ')[2])[1:-1]
-                atom_type = str(str(line).strip().split(', ')[3])[1:-1]
+    # Note a change a different db-definition of the model ID.
+    c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
+    data = c.fetchall()
+    for line in data:
+        atom_label = str(str(line).strip().split(', ')[2])[1:-1]
+        atom_type = str(str(line).strip().split(', ')[3])[1:-1]
 
-                atom_x = str(line).strip().split(', ')[4]
-                atom_y = str(line).strip().split(', ')[5]
-                atom_z = str(line).strip().split(', ')[6]
+        atom_x = str(line).strip().split(', ')[4]
+        atom_y = str(line).strip().split(', ')[5]
+        atom_z = str(line).strip().split(', ')[6]
 
-                atom_line = ' '.join([atom_label, atom_type, atom_x, atom_y, atom_z])
-                print("ID, atom_line: ", ID, atom_line)
+        atom_line = ' '.join([atom_label, atom_type, atom_x, atom_y, atom_z])
+        print("ID, atom_line: ", ID, atom_line)
 
-
-model_atom_coordinates_b()
+for ID in range(1, model_number + 1):
+    model_names_b(ID)
+    model_unit_cell_dimensions_b(ID)
+    model_spacegroup_b(ID)
+    model_symmetry_operations_b(ID)
+    model_atom_coordinates_b(ID)
 
 # --- test end.
 
