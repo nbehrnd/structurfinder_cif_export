@@ -75,7 +75,24 @@ for ID in range(1, model_number + 1):
 
 # ---- test end.
 
-def model_spacegroup():
+#def model_spacegroup():
+#    """ Readout the Hermann-Maguin spacegroup """
+#    if model_number > 0:
+#        for ID in range(1, model_number + 1):
+
+#            spacegroup_HM = ""
+#            c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
+#            data = c.fetchall()
+#            for line in data:
+#                spacegroup_HM = str(str(line).strip().split(', ')[3])[1:-1]
+#                print("ID; spacegroup: ", ID, spacegroup_HM)
+
+
+## model_spacegroup()
+
+# ---- test start:
+
+def model_spacegroup_b():
     """ Readout the Hermann-Maguin spacegroup """
     if model_number > 0:
         for ID in range(1, model_number + 1):
@@ -88,8 +105,9 @@ def model_spacegroup():
                 print("ID; spacegroup: ", ID, spacegroup_HM)
 
 
-# model_spacegroup()
+model_spacegroup_b()
 
+# ---- test end.
 
 def model_symmetry_operations():
     """ Retrieve the symmetry operations """
