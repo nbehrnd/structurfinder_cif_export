@@ -75,20 +75,7 @@ def model_unit_cell_dimensions_b(ID):
 
 # ---- test end.
 
-#def model_spacegroup():
-#    """ Readout the Hermann-Maguin spacegroup """
-#    if model_number > 0:
-#        for ID in range(1, model_number + 1):
 
-#            spacegroup_HM = ""
-#            c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
-#            data = c.fetchall()
-#            for line in data:
-#                spacegroup_HM = str(str(line).strip().split(', ')[3])[1:-1]
-#                print("ID; spacegroup: ", ID, spacegroup_HM)
-
-
-## model_spacegroup()
 
 # ---- test start:
 
