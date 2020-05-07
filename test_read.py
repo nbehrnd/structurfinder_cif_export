@@ -32,23 +32,6 @@ def model_number():
 
 model_number()
 
-def model_names():
-    """ Determine the name of the structure entries in the set with ID. """
-    model_name = ""
-
-    if model_number > 0:
-        for ID in range(1, model_number + 1):
-
-            c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(ID))
-            data = c.fetchall()
-            for entry in data:
-                model_name = str(entry)[3:-3]
-                cif_model_entry = ''.join(['{}: '.format(ID), 'data_', model_name])
-                print(cif_model_entry)
-
-
-# model_names()
-
 # ----  test start:
 
 def model_names_b(ID):
