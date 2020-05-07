@@ -55,7 +55,7 @@ def model_unit_cell_dimensions_b(ID):
         angle_beta = ''.join(['_cell_angle_beta ', str(line).split(", ")[6]])
         angle_gamma = ''.join(['_cell_angle_gamma ', str(line).split(", ")[7]])
 
-        print("ID; a, b, c: ", ID, length_a, length_b, length_c)
+        print("a, b, c: ", length_a, length_b, length_c)
         print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
 
 
@@ -67,7 +67,7 @@ def model_spacegroup_b(ID):
     data = c.fetchall()
     for line in data:
         spacegroup_HM = str(str(line).strip().split(', ')[3])[1:-1]
-        print("ID; spacegroup: ", ID, spacegroup_HM)
+        print("spacegroup: ", spacegroup_HM)
 
 
 def model_symmetry_operations_b(ID):
@@ -82,8 +82,7 @@ def model_symmetry_operations_b(ID):
 
         # separation of the symmetry operations in this retrieved string:
         symmetry_operations = operators.split('\\n')
-        print("\n len symmetry_operations: ", len(symmetry_operations))
-        print("ID, symmetry_operations: ", ID, symmetry_operations)
+#        print("symmetry_operations: ", symmetry_operations)
         j = 1
         for operation in symmetry_operations:
             print("{} {}".format(j, operation))
@@ -105,7 +104,7 @@ def model_atom_coordinates_b(ID):
         atom_z = str(line).strip().split(', ')[6]
 
         atom_line = ' '.join([atom_label, atom_type, atom_x, atom_y, atom_z])
-        print("ID, atom_line: ", ID, atom_line)
+        print(atom_line)
 
 
 # action calls:
