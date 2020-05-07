@@ -81,7 +81,7 @@ def model_spacegroup():
         print("spacegroup: ", spacegroup_HM)
 
 
-# model_spacegroup()
+model_spacegroup()
 
 
 def model_symmetry_operations():
