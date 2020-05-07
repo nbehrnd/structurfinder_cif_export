@@ -51,19 +51,23 @@ model_names()
 
 def model_unit_cell_dimensions():
     """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
-    c.execute('SELECT * FROM CELL')
-    data = c.fetchall()
-    for line in data:
-        length_a = ''.join(['_cell_length_a ', str(line).split(", ")[2]])
-        length_b = ''.join(['_cell_length_b ', str(line).split(", ")[3]])
-        length_c = ''.join(['_cell_length_c ', str(line).split(", ")[4]])
 
-        angle_alpha = ''.join(['_cell_angle_alpha ', str(line).split(", ")[5]])
-        angle_beta = ''.join(['_cell_angle_beta ', str(line).split(", ")[6]])
-        angle_gamma = ''.join(['_cell_angle_gamma ', str(line).split(", ")[7]])
+    if model_number > 0:
+        for ID in range(1, model_number + 1):
 
-        print("a, b, c: ", length_a, length_b, length_c)
-        print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
+            c.execute('SELECT * FROM CELL WHERE ID={}'.format(ID))
+            data = c.fetchall()
+            for line in data:
+                length_a = ''.join(['_cell_length_a ', str(line).split(", ")[2]])
+                length_b = ''.join(['_cell_length_b ', str(line).split(", ")[3]])
+                length_c = ''.join(['_cell_length_c ', str(line).split(", ")[4]])
+
+                angle_alpha = ''.join(['_cell_angle_alpha ', str(line).split(", ")[5]])
+                angle_beta = ''.join(['_cell_angle_beta ', str(line).split(", ")[6]])
+                angle_gamma = ''.join(['_cell_angle_gamma ', str(line).split(", ")[7]])
+
+                print("ID; a, b, c: ", ID, length_a, length_b, length_c)
+                print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
 model_unit_cell_dimensions()
 
 
