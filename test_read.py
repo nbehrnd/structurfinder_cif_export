@@ -30,7 +30,7 @@ def model_number():
     print("model_number: ", model_number)
 
 
-# model_number()
+model_number()
 
 def model_names():
     """ Determine the name of the structure entries in the set with ID. """
@@ -89,22 +89,25 @@ def model_spacegroup():
 
 def model_symmetry_operations():
     """ Retrieve the symmetry operations """
-    symmetry_operations = []
-    c.execute('SELECT * FROM RESIDUALS')
-    data = c.fetchall()
-    for line in data:
-        # isolation of the entry in the sqlite database:
-        operators = str(str(line).strip().split(', ')[8])[1:-1]
-#         print("operators: ", operators)
+    if model_number > 0:
+        for ID in range(1, model_number + 1):
 
-        # separation of the symmetry operations in this retrieved string:
-        symmetry_operations = operators.split('\\n')
-#         print("len symmetry_operations: ", len(symmetry_operations))
-        print("symmetry_operations: ", symmetry_operations)
-        j = 1
-        for operation in symmetry_operations:
-            print("{} {}".format(j, operation))
-            j += 1
+            symmetry_operations = []
+            c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
+            data = c.fetchall()
+            for line in data:
+                # isolation of the entry in the sqlite database:
+                operators = str(str(line).strip().split(', ')[8])[1:-1]
+        #         print("operators: ", operators)
+
+                # separation of the symmetry operations in this retrieved string:
+                symmetry_operations = operators.split('\\n')
+                print("\n len symmetry_operations: ", len(symmetry_operations))
+                print("ID, symmetry_operations: ", ID, symmetry_operations)
+                j = 1
+                for operation in symmetry_operations:
+                    print("{} {}".format(j, operation))
+                    j += 1
 
 
 model_symmetry_operations()
