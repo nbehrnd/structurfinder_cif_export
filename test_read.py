@@ -15,10 +15,30 @@
     default. """
 
 import sqlite3
+import sys
 
-conn = sqlite3.connect('two_data.sqlite')
-c = conn.cursor()
 
+# Safety guard, limiting the execution to Python 3.
+if sys.version_info > (3, 0):
+    pass
+else:
+    print("\nThe script's proper execution requires Python 3.")
+    print("Without change of any data, the script closes now.\n")
+    sys.exit()
+
+print("\nThis is test_read.py, attempting to extract a minimal .cif from")
+print("the .sqlite database written by the .cif Structurefinder by")
+print("Kratzert and Krossing.  It is a concept study, so features are")
+print("missing or buggy.  Deposit this Python 3 script in the same folder")
+print("as the closed .sqlite database file to work with , and run it from")
+print("the CLI.  Only standard modules Python 3 includes are used here.")
+print("\nAt any time, the program may be left with Ctrl + C.\n")
+print("Enter now the complete filename (with '.sqlite' extension) as there")
+print("is no tab-completion.")
+
+INPUT_FILE = input("Your input: ")
+CONN = sqlite3.connect(INPUT_FILE)
+c = CONN.cursor()
 
 def model_number():
     """ Determine the number of structure entries in the set. """
@@ -27,114 +47,134 @@ def model_number():
     c.execute('SELECT ID FROM STRUCTURE')
     data = c.fetchall()
     model_number = len(data)
-    print("model_number: ", model_number)
+    print(model_number, "model data to consider.\n")
 
 
-model_number()
-
-def model_names():
+def model_names_b(ID):
     """ Determine the name of the structure entries in the set with ID. """
+    global model_name
     model_name = ""
+    c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(ID))
+    data = c.fetchone()
+    model_name = str(data)[3:-3]
+    cif_model_entry = ''.join(['data_', model_name])
+    print("Work on: ", cif_model_entry)
 
-    if model_number > 0:
-        for ID in range(1, model_number + 1):
+    # keep track of the information retrieved from the sqlite database
+    global restore_register
+    restore_register = []
+    restore_register.append(cif_model_entry)
 
-            c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(ID))
-            data = c.fetchall()
-            for entry in data:
-                model_name = str(entry)[3:-3]
-                cif_model_entry = ''.join(['{}: '.format(ID), 'data_', model_name])
-                print(cif_model_entry)
-
-
-# model_names()
-
-def model_unit_cell_dimensions():
+def model_unit_cell_dimensions_b(ID):
     """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
 
-    if model_number > 0:
-        for ID in range(1, model_number + 1):
+    c.execute('SELECT * FROM CELL WHERE ID={}'.format(ID))
+    data = c.fetchall()
+    for line in data:
+        length_a = ''.join(['_cell_length_a ', str(line).split(", ")[2]])
+        length_b = ''.join(['_cell_length_b ', str(line).split(", ")[3]])
+        length_c = ''.join(['_cell_length_c ', str(line).split(", ")[4]])
 
-            c.execute('SELECT * FROM CELL WHERE ID={}'.format(ID))
-            data = c.fetchall()
-            for line in data:
-                length_a = ''.join(['_cell_length_a ', str(line).split(", ")[2]])
-                length_b = ''.join(['_cell_length_b ', str(line).split(", ")[3]])
-                length_c = ''.join(['_cell_length_c ', str(line).split(", ")[4]])
+        angle_alpha = ''.join(['_cell_angle_alpha ', str(line).split(", ")[5]])
+        angle_beta = ''.join(['_cell_angle_beta ', str(line).split(", ")[6]])
+        angle_gamma = ''.join(['_cell_angle_gamma ', str(line).split(", ")[7]])
 
-                angle_alpha = ''.join(['_cell_angle_alpha ', str(line).split(", ")[5]])
-                angle_beta = ''.join(['_cell_angle_beta ', str(line).split(", ")[6]])
-                angle_gamma = ''.join(['_cell_angle_gamma ', str(line).split(", ")[7]])
+        # print("a, b, c: ", length_a, length_b, length_c)
+        # print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
 
-                print("ID; a, b, c: ", ID, length_a, length_b, length_c)
-                print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
-# model_unit_cell_dimensions()
+        restore_register.append(length_a)
+        restore_register.append(length_b)
+        restore_register.append(length_c)
 
-
-def model_spacegroup():
-    """ Readout the Hermann-Maguin spacegroup """
-    if model_number > 0:
-        for ID in range(1, model_number + 1):
-
-            spacegroup_HM = ""
-            c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
-            data = c.fetchall()
-            for line in data:
-                spacegroup_HM = str(str(line).strip().split(', ')[3])[1:-1]
-                print("ID; spacegroup: ", ID, spacegroup_HM)
+        restore_register.append(angle_alpha)
+        restore_register.append(angle_beta)
+        restore_register.append(angle_gamma)
 
 
-# model_spacegroup()
+def model_spacegroup_b(ID):
+    """ Readout the Herman-Maguin space-group """
+
+    spacegroup_HM = ""
+    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
+    data = c.fetchall()
+    for line in data:
+        spacegroup_HM = str(line).strip().split(', ')[3]
+        cif_HM = ''.join(['_symmetry_space_group_name_H-M   ', spacegroup_HM])
+        restore_register.append(cif_HM)
+        restore_register.append(" ")
 
 
-def model_symmetry_operations():
+def model_symmetry_operations_b(ID):
     """ Retrieve the symmetry operations """
-    if model_number > 0:
-        for ID in range(1, model_number + 1):
 
-            symmetry_operations = []
-            c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
-            data = c.fetchall()
-            for line in data:
-                # isolation of the entry in the sqlite database:
-                operators = str(str(line).strip().split(', ')[8])[1:-1]
-        #         print("operators: ", operators)
+    symmetry_operations = []
+    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
+    data = c.fetchall()
 
-                # separation of the symmetry operations in this retrieved string:
-                symmetry_operations = operators.split('\\n')
-                print("\n len symmetry_operations: ", len(symmetry_operations))
-                print("ID, symmetry_operations: ", ID, symmetry_operations)
-                j = 1
-                for operation in symmetry_operations:
-                    print("{} {}".format(j, operation))
-                    j += 1
+    # heading marker in the .cif file about the following loop:
+    restore_register.append("loop_")
+    restore_register.append("_symmetry_equiv_pos_site_id")
+    restore_register.append("_symmetry_equiv_pos_as_xyz")
+
+    for line in data:
+        # isolation of the entry in the sqlite database:
+        operators = str(str(line).strip().split(', ')[8])[1:-1]
+
+        # separation of the symmetry operations in this retrieved string:
+        symmetry_operations = operators.split('\\n')
+#        print("symmetry_operations: ", symmetry_operations)
+        j = 1
+        for operation in symmetry_operations:
+            # print("{} {}".format(j, operation))
+            restore_register.append("{} {}".format(j, operation))
+            j += 1
 
 
-model_symmetry_operations()
-
-
-def model_atom_coordinates():
+def model_atom_coordinates_b(ID):
     """ Retrieve atom label, atom type and atom coordinates _per model_ """
-    if model_number > 0:
-        for ID in range(1, model_number + 1):
 
-            # Note a change a different db-definition of the model ID.
-            c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
-            data = c.fetchall()
-            for line in data:
-                atom_label = str(str(line).strip().split(', ')[2])[1:-1]
-                atom_type = str(str(line).strip().split(', ')[3])[1:-1]
+    # Note a change a different db-definition of the model ID.
+    c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
+    data = c.fetchall()
 
-                atom_x = str(line).strip().split(', ')[4]
-                atom_y = str(line).strip().split(', ')[5]
-                atom_z = str(line).strip().split(', ')[6]
+    # heading marker in the .cif file about the following loop:
+    restore_register.append("\nloop_")
+    restore_register.append("_atom_site_label")
+    restore_register.append("_atom_site_type_symbol")
+    restore_register.append("_atom_site_fract_x")
+    restore_register.append("_atom_site_fract_y")
+    restore_register.append("_atom_site_fract_z")
 
-                atom_line = ' '.join([atom_label, atom_type, atom_x, atom_y, atom_z])
-                print("ID, atom_line: ", ID, atom_line)
+    for line in data:
+        atom_label = str(str(line).strip().split(', ')[2])[1:-1]
+        atom_type = str(str(line).strip().split(', ')[3])[1:-1]
+
+        atom_x = str(line).strip().split(', ')[4]
+        atom_y = str(line).strip().split(', ')[5]
+        atom_z = str(line).strip().split(', ')[6]
+
+        atom_line = ' '.join([atom_label, atom_type, atom_x, atom_y, atom_z])
+        # print(atom_line)
+        restore_register.append(atom_line)
+
+def restored_model(ID):
+    """ Write a minimal .cif file about the retrieved information. """
+    file_name = ''.join([model_name, '.cif'])
+    with open(file_name, mode="w") as newfile:
+        for entry in restore_register:
+            newfile.write("{}\n".format(entry))
 
 
-model_atom_coordinates()
+# action calls:
+model_number()  # identify the number of models to consider
+for ID in range(1, model_number + 1):
+    model_names_b(ID)
+    model_unit_cell_dimensions_b(ID)
+    model_spacegroup_b(ID)
+    model_symmetry_operations_b(ID)
+    model_atom_coordinates_b(ID)
+    restored_model(ID)
 
 # close pointer and database file:
 c.close()
-conn.close()
+CONN.close()
