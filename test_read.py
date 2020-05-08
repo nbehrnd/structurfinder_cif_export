@@ -2,7 +2,8 @@
 # author:  nbehrnd@yahoo.com
 # license:
 # date:    2020-05-07 (YYYY-MM-DD)
-# edit:
+# edit:    2020-05-08 (YYYY-MM-DD)
+#
 """ Collect a selection of information of Structurefinder's database.
 
     The re-creation of a minimal .cif file for each of the entries may
@@ -40,36 +41,40 @@ INPUT_FILE = input("Your input: ")
 CONN = sqlite3.connect(INPUT_FILE)
 c = CONN.cursor()
 
+
 def model_number():
     """ Determine the number of structure entries in the set. """
     global model_number
     model_number = 0
     c.execute('SELECT ID FROM STRUCTURE')
     data = c.fetchall()
+
     model_number = len(data)
     print(model_number, "model data to consider.\n")
 
 
-def model_names_b(ID):
+def model_name_b(ID):
     """ Determine the name of the structure entries in the set with ID. """
     global model_name
     model_name = ""
     c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(ID))
     data = c.fetchone()
+
     model_name = str(data)[3:-3]
-    cif_model_entry = ''.join(['data_', model_name])
-    print("Work on: ", cif_model_entry)
+    print("Work on: ", model_name)
 
     # keep track of the information retrieved from the sqlite database
     global restore_register
     restore_register = []
+    cif_model_entry = ''.join(['data_', model_name])
     restore_register.append(cif_model_entry)
 
-def model_unit_cell_dimensions_b(ID):
-    """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
 
+def model_unit_cell_dimensions(ID):
+    """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
     c.execute('SELECT * FROM CELL WHERE ID={}'.format(ID))
     data = c.fetchall()
+
     for line in data:
         length_a = ''.join(['_cell_length_a ', str(line).split(", ")[2]])
         length_b = ''.join(['_cell_length_b ', str(line).split(", ")[3]])
@@ -91,12 +96,12 @@ def model_unit_cell_dimensions_b(ID):
         restore_register.append(angle_gamma)
 
 
-def model_spacegroup_b(ID):
+def model_spacegroup(ID):
     """ Readout the Herman-Maguin space-group """
-
     spacegroup_HM = ""
     c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
     data = c.fetchall()
+
     for line in data:
         spacegroup_HM = str(line).strip().split(', ')[3]
         cif_HM = ''.join(['_symmetry_space_group_name_H-M   ', spacegroup_HM])
@@ -104,9 +109,8 @@ def model_spacegroup_b(ID):
         restore_register.append(" ")
 
 
-def model_symmetry_operations_b(ID):
+def model_symmetry_operations(ID):
     """ Retrieve the symmetry operations """
-
     symmetry_operations = []
     c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
     data = c.fetchall()
@@ -122,17 +126,16 @@ def model_symmetry_operations_b(ID):
 
         # separation of the symmetry operations in this retrieved string:
         symmetry_operations = operators.split('\\n')
-#        print("symmetry_operations: ", symmetry_operations)
+
         j = 1
         for operation in symmetry_operations:
-            # print("{} {}".format(j, operation))
-            restore_register.append("{} {}".format(j, operation))
+            retain = str("{} {}".format(j, operation))
+            restore_register.append(retain)
             j += 1
 
 
-def model_atom_coordinates_b(ID):
+def model_atom_coordinates(ID):
     """ Retrieve atom label, atom type and atom coordinates _per model_ """
-
     # Note a change a different db-definition of the model ID.
     c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
     data = c.fetchall()
@@ -157,7 +160,8 @@ def model_atom_coordinates_b(ID):
         # print(atom_line)
         restore_register.append(atom_line)
 
-def restored_model(ID):
+
+def restore_model():
     """ Write a minimal .cif file about the retrieved information. """
     file_name = ''.join([model_name, '.cif'])
     with open(file_name, mode="w") as newfile:
@@ -168,12 +172,13 @@ def restored_model(ID):
 # action calls:
 model_number()  # identify the number of models to consider
 for ID in range(1, model_number + 1):
-    model_names_b(ID)
-    model_unit_cell_dimensions_b(ID)
-    model_spacegroup_b(ID)
-    model_symmetry_operations_b(ID)
-    model_atom_coordinates_b(ID)
-    restored_model(ID)
+    model_name_b(ID)
+    model_unit_cell_dimensions(ID)
+    model_spacegroup(ID)
+    model_symmetry_operations(ID)
+    model_atom_coordinates(ID)
+
+    restore_model()
 
 # close pointer and database file:
 c.close()
