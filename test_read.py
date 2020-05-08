@@ -52,11 +52,11 @@ def count_models():
     return number_of_models
 
 
-def model_name_b(ID):
+def model_name_b(model_id):
     """ Determine the name of the structure entries in the set with ID. """
     global model_name
     model_name = ""
-    c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(ID))
+    c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(model_id))
     data = c.fetchone()
 
     model_name = str(data)[3:-3]
@@ -69,9 +69,9 @@ def model_name_b(ID):
     restore_register.append(cif_model_entry)
 
 
-def model_unit_cell_dimensions(ID):
+def model_unit_cell_dimensions(model_id):
     """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
-    c.execute('SELECT * FROM CELL WHERE ID={}'.format(ID))
+    c.execute('SELECT * FROM CELL WHERE ID={}'.format(model_id))
     data = c.fetchall()
 
     length_a = ''.join(['_cell_length_a ', str(data).split(", ")[2]])
@@ -94,10 +94,10 @@ def model_unit_cell_dimensions(ID):
     restore_register.append(angle_gamma)
 
 
-def model_spacegroup(ID):
+def model_spacegroup(model_id):
     """ Readout the Herman-Maguin space-group """
     spacegroup_HM = ""
-    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
+    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(model_id))
     data = c.fetchall()
 
     spacegroup_HM = str(data).strip().split(', ')[3]
@@ -105,10 +105,10 @@ def model_spacegroup(ID):
     restore_register.append(cif_HM)
 
 
-def model_symmetry_operations(ID):
+def model_symmetry_operations(model_id):
     """ Retrieve the symmetry operations """
     symmetry_operations = []
-    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
+    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(model_id))
     data = c.fetchall()
 
     # heading marker in the .cif file about the following loop:
@@ -129,10 +129,10 @@ def model_symmetry_operations(ID):
         j += 1
 
 
-def model_atom_coordinates(ID):
+def model_atom_coordinates(model_id):
     """ Retrieve atom label, atom type and atom coordinates _per model_ """
     # Note a change a different db-definition of the model ID.
-    c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
+    c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(model_id))
     data = c.fetchall()
 
     # heading marker in the .cif file about the following loop:
@@ -166,12 +166,12 @@ def restore_model():
 
 def main():
     """ Joining the functions. """
-    for ID in range(1, count_models() + 1):
-        model_name_b(ID)
-        model_unit_cell_dimensions(ID)
-        model_spacegroup(ID)
-        model_symmetry_operations(ID)
-        model_atom_coordinates(ID)
+    for model_id in range(1, count_models() + 1):
+        model_name_b(model_id)
+        model_unit_cell_dimensions(model_id)
+        model_spacegroup(model_id)
+        model_symmetry_operations(model_id)
+        model_atom_coordinates(model_id)
 
         restore_model()
 
