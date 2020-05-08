@@ -165,17 +165,21 @@ def restore_model():
             newfile.write("{}\n".format(entry))
 
 
-# action calls:
-model_number()  # identify the number of models to consider
-for ID in range(1, model_number + 1):
-    model_name_b(ID)
-    model_unit_cell_dimensions(ID)
-    model_spacegroup(ID)
-    model_symmetry_operations(ID)
-    model_atom_coordinates(ID)
+def main():
+    """ Joining the functions. """
+    model_number()  # identify the number of models to consider
+    for ID in range(1, model_number + 1):
+        model_name_b(ID)
+        model_unit_cell_dimensions(ID)
+        model_spacegroup(ID)
+        model_symmetry_operations(ID)
+        model_atom_coordinates(ID)
 
-    restore_model()
+        restore_model()
 
-# close pointer and database file:
-c.close()
-CONN.close()
+    # close pointer and database file:
+    c.close()
+    CONN.close()
+
+
+main()
