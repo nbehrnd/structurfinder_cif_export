@@ -42,15 +42,14 @@ CONN = sqlite3.connect(INPUT_FILE)
 c = CONN.cursor()
 
 
-def model_number():
-    """ Determine the number of structure entries in the set. """
-    global model_number
-    model_number = 0
+def count_models():
+    """ Count the number of model entries (.cif) in the .sqlite file. """
     c.execute('SELECT ID FROM STRUCTURE')
     data = c.fetchall()
 
-    model_number = len(data)
-    print(model_number, "model data to consider.\n")
+    number_of_models = len(data)
+    print(number_of_models, "model data to consider.\n")
+    return number_of_models
 
 
 def model_name_b(ID):
@@ -167,8 +166,7 @@ def restore_model():
 
 def main():
     """ Joining the functions. """
-    model_number()  # identify the number of models to consider
-    for ID in range(1, model_number + 1):
+    for ID in range(1, count_models() + 1):
         model_name_b(ID)
         model_unit_cell_dimensions(ID)
         model_spacegroup(ID)
