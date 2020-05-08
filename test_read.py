@@ -18,7 +18,6 @@
 import sqlite3
 import sys
 
-
 # Safety guard, limiting the execution to Python 3.
 if sys.version_info > (3, 0):
     pass
