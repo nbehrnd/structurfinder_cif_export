@@ -101,11 +101,10 @@ def model_spacegroup(ID):
     c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
     data = c.fetchall()
 
-    for line in data:
-        spacegroup_HM = str(line).strip().split(', ')[3]
-        cif_HM = ''.join(['_symmetry_space_group_name_H-M   ', spacegroup_HM])
-        restore_register.append(cif_HM)
-        restore_register.append(" ")
+    spacegroup_HM = str(data).strip().split(', ')[3]
+    cif_HM = ''.join(['_symmetry_space_group_name_H-M   ', spacegroup_HM])
+    restore_register.append(cif_HM)
+    restore_register.append(" ")
 
 
 def model_symmetry_operations(ID):
