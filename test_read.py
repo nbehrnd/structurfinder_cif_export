@@ -96,13 +96,13 @@ def model_unit_cell_dimensions(model_id):
 
 def model_spacegroup(model_id):
     """ Readout the Herman-Maguin space-group """
-    spacegroup_HM = ""
+    spacegroup = ""
     C.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(model_id))
     data = C.fetchall()
 
-    spacegroup_HM = str(data).strip().split(', ')[3]
-    cif_HM = ''.join(['_symmetry_space_group_name_H-M   ', spacegroup_HM])
-    restore_register.append(cif_HM)
+    spacegroup = str(data).strip().split(', ')[3]
+    cif_spacegroup = ''.join(['_symmetry_space_group_name_H-M  ', spacegroup])
+    restore_register.append(cif_spacegroup)
 
 
 def model_symmetry_operations(model_id):
