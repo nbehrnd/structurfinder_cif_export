@@ -39,13 +39,13 @@ print("is no tab-completion.")
 
 INPUT_FILE = input("Your input: ")
 CONN = sqlite3.connect(INPUT_FILE)
-c = CONN.cursor()
+C = CONN.cursor()
 
 
 def count_models():
     """ Count the number of model entries (.cif) in the .sqlite file. """
-    c.execute('SELECT ID FROM STRUCTURE')
-    data = c.fetchall()
+    C.execute('SELECT ID FROM STRUCTURE')
+    data = C.fetchall()
 
     number_of_models = len(data)
     print(number_of_models, "model data to consider.\n")
@@ -56,8 +56,8 @@ def model_name_b(model_id):
     """ Determine the name of the structure entries in the set with ID. """
     global model_name
     model_name = ""
-    c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(model_id))
-    data = c.fetchone()
+    C.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(model_id))
+    data = C.fetchone()
 
     model_name = str(data)[3:-3]
     print("Work on: ", model_name)
@@ -71,8 +71,8 @@ def model_name_b(model_id):
 
 def model_unit_cell_dimensions(model_id):
     """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
-    c.execute('SELECT * FROM CELL WHERE ID={}'.format(model_id))
-    data = c.fetchall()
+    C.execute('SELECT * FROM CELL WHERE ID={}'.format(model_id))
+    data = C.fetchall()
 
     length_a = ''.join(['_cell_length_a ', str(data).split(", ")[2]])
     length_b = ''.join(['_cell_length_b ', str(data).split(", ")[3]])
@@ -97,8 +97,8 @@ def model_unit_cell_dimensions(model_id):
 def model_spacegroup(model_id):
     """ Readout the Herman-Maguin space-group """
     spacegroup_HM = ""
-    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(model_id))
-    data = c.fetchall()
+    C.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(model_id))
+    data = C.fetchall()
 
     spacegroup_HM = str(data).strip().split(', ')[3]
     cif_HM = ''.join(['_symmetry_space_group_name_H-M   ', spacegroup_HM])
@@ -108,8 +108,8 @@ def model_spacegroup(model_id):
 def model_symmetry_operations(model_id):
     """ Retrieve the symmetry operations """
     symmetry_operations = []
-    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(model_id))
-    data = c.fetchall()
+    C.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(model_id))
+    data = C.fetchall()
 
     # heading marker in the .cif file about the following loop:
     restore_register.append("\nloop_")
@@ -132,8 +132,8 @@ def model_symmetry_operations(model_id):
 def model_atom_coordinates(model_id):
     """ Retrieve atom label, atom type and atom coordinates _per model_ """
     # Note a change a different db-definition of the model ID.
-    c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(model_id))
-    data = c.fetchall()
+    C.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(model_id))
+    data = C.fetchall()
 
     # heading marker in the .cif file about the following loop:
     restore_register.append("\nloop_")
@@ -176,7 +176,7 @@ def main():
         restore_model()
 
     # close pointer and database file:
-    c.close()
+    C.close()
     CONN.close()
 
 
