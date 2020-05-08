@@ -75,25 +75,24 @@ def model_unit_cell_dimensions(ID):
     c.execute('SELECT * FROM CELL WHERE ID={}'.format(ID))
     data = c.fetchall()
 
-    for line in data:
-        length_a = ''.join(['_cell_length_a ', str(line).split(", ")[2]])
-        length_b = ''.join(['_cell_length_b ', str(line).split(", ")[3]])
-        length_c = ''.join(['_cell_length_c ', str(line).split(", ")[4]])
+    length_a = ''.join(['_cell_length_a ', str(data).split(", ")[2]])
+    length_b = ''.join(['_cell_length_b ', str(data).split(", ")[3]])
+    length_c = ''.join(['_cell_length_c ', str(data).split(", ")[4]])
 
-        angle_alpha = ''.join(['_cell_angle_alpha ', str(line).split(", ")[5]])
-        angle_beta = ''.join(['_cell_angle_beta ', str(line).split(", ")[6]])
-        angle_gamma = ''.join(['_cell_angle_gamma ', str(line).split(", ")[7]])
+    angle_alpha = ''.join(['_cell_angle_alpha ', str(data).split(", ")[5]])
+    angle_beta = ''.join(['_cell_angle_beta ', str(data).split(", ")[6]])
+    angle_gamma = ''.join(['_cell_angle_gamma ', str(data).split(", ")[7]])
 
-        # print("a, b, c: ", length_a, length_b, length_c)
-        # print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
+    # print("a, b, c: ", length_a, length_b, length_c)
+    # print("alpha, beta, gamma: ", angle_alpha, angle_beta, angle_gamma)
 
-        restore_register.append(length_a)
-        restore_register.append(length_b)
-        restore_register.append(length_c)
+    restore_register.append(length_a)
+    restore_register.append(length_b)
+    restore_register.append(length_c)
 
-        restore_register.append(angle_alpha)
-        restore_register.append(angle_beta)
-        restore_register.append(angle_gamma)
+    restore_register.append(angle_alpha)
+    restore_register.append(angle_beta)
+    restore_register.append(angle_gamma)
 
 
 def model_spacegroup(ID):
