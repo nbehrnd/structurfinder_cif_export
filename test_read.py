@@ -104,7 +104,6 @@ def model_spacegroup(ID):
     spacegroup_HM = str(data).strip().split(', ')[3]
     cif_HM = ''.join(['_symmetry_space_group_name_H-M   ', spacegroup_HM])
     restore_register.append(cif_HM)
-    restore_register.append(" ")
 
 
 def model_symmetry_operations(ID):
@@ -114,22 +113,21 @@ def model_symmetry_operations(ID):
     data = c.fetchall()
 
     # heading marker in the .cif file about the following loop:
-    restore_register.append("loop_")
+    restore_register.append("\nloop_")
     restore_register.append("_symmetry_equiv_pos_site_id")
     restore_register.append("_symmetry_equiv_pos_as_xyz")
 
-    for line in data:
-        # isolation of the entry in the sqlite database:
-        operators = str(str(line).strip().split(', ')[8])[1:-1]
+    # isolation of the entry in the sqlite database:
+    operators = str(str(data).strip().split(', ')[8])[1:-1]
 
-        # separation of the symmetry operations in this retrieved string:
-        symmetry_operations = operators.split('\\n')
+    # separation of the symmetry operations in this retrieved string:
+    symmetry_operations = operators.split('\\n')
 
-        j = 1
-        for operation in symmetry_operations:
-            retain = str("{} {}".format(j, operation))
-            restore_register.append(retain)
-            j += 1
+    j = 1
+    for operation in symmetry_operations:
+        retain = str("{} {}".format(j, operation))
+        restore_register.append(retain)
+        j += 1
 
 
 def model_atom_coordinates(ID):
