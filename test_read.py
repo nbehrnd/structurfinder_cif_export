@@ -18,7 +18,6 @@
 import sqlite3
 import sys
 
-
 # Safety guard, limiting the execution to Python 3.
 if sys.version_info > (3, 0):
     pass
@@ -39,26 +38,25 @@ print("is no tab-completion.")
 
 INPUT_FILE = input("Your input: ")
 CONN = sqlite3.connect(INPUT_FILE)
-c = CONN.cursor()
+C = CONN.cursor()
 
 
-def model_number():
-    """ Determine the number of structure entries in the set. """
-    global model_number
-    model_number = 0
-    c.execute('SELECT ID FROM STRUCTURE')
-    data = c.fetchall()
+def count_models():
+    """ Count the number of model entries (.cif) in the .sqlite file. """
+    C.execute('SELECT ID FROM STRUCTURE')
+    data = C.fetchall()
 
-    model_number = len(data)
-    print(model_number, "model data to consider.\n")
+    number_of_models = len(data)
+    print(number_of_models, "model data to consider.\n")
+    return number_of_models
 
 
-def model_name_b(ID):
+def model_name_b(model_id):
     """ Determine the name of the structure entries in the set with ID. """
     global model_name
     model_name = ""
-    c.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(ID))
-    data = c.fetchone()
+    C.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(model_id))
+    data = C.fetchone()
 
     model_name = str(data)[3:-3]
     print("Work on: ", model_name)
@@ -70,10 +68,10 @@ def model_name_b(ID):
     restore_register.append(cif_model_entry)
 
 
-def model_unit_cell_dimensions(ID):
+def model_unit_cell_dimensions(model_id):
     """ Retrieve lengths a, b, c and angles alpha, beta, gamma of the cell """
-    c.execute('SELECT * FROM CELL WHERE ID={}'.format(ID))
-    data = c.fetchall()
+    C.execute('SELECT * FROM CELL WHERE ID={}'.format(model_id))
+    data = C.fetchall()
 
     length_a = ''.join(['_cell_length_a ', str(data).split(", ")[2]])
     length_b = ''.join(['_cell_length_b ', str(data).split(", ")[3]])
@@ -95,22 +93,22 @@ def model_unit_cell_dimensions(ID):
     restore_register.append(angle_gamma)
 
 
-def model_spacegroup(ID):
+def model_spacegroup(model_id):
     """ Readout the Herman-Maguin space-group """
-    spacegroup_HM = ""
-    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
-    data = c.fetchall()
+    spacegroup = ""
+    C.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(model_id))
+    data = C.fetchall()
 
-    spacegroup_HM = str(data).strip().split(', ')[3]
-    cif_HM = ''.join(['_symmetry_space_group_name_H-M   ', spacegroup_HM])
-    restore_register.append(cif_HM)
+    spacegroup = str(data).strip().split(', ')[3]
+    cif_spacegroup = ''.join(['_symmetry_space_group_name_H-M  ', spacegroup])
+    restore_register.append(cif_spacegroup)
 
 
-def model_symmetry_operations(ID):
+def model_symmetry_operations(model_id):
     """ Retrieve the symmetry operations """
     symmetry_operations = []
-    c.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(ID))
-    data = c.fetchall()
+    C.execute('SELECT * FROM RESIDUALS WHERE ID={}'.format(model_id))
+    data = C.fetchall()
 
     # heading marker in the .cif file about the following loop:
     restore_register.append("\nloop_")
@@ -130,11 +128,11 @@ def model_symmetry_operations(ID):
         j += 1
 
 
-def model_atom_coordinates(ID):
+def model_atom_coordinates(model_id):
     """ Retrieve atom label, atom type and atom coordinates _per model_ """
     # Note a change a different db-definition of the model ID.
-    c.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(ID))
-    data = c.fetchall()
+    C.execute('SELECT * FROM ATOMS WHERE STRUCTUREID={}'.format(model_id))
+    data = C.fetchall()
 
     # heading marker in the .cif file about the following loop:
     restore_register.append("\nloop_")
@@ -165,17 +163,20 @@ def restore_model():
             newfile.write("{}\n".format(entry))
 
 
-# action calls:
-model_number()  # identify the number of models to consider
-for ID in range(1, model_number + 1):
-    model_name_b(ID)
-    model_unit_cell_dimensions(ID)
-    model_spacegroup(ID)
-    model_symmetry_operations(ID)
-    model_atom_coordinates(ID)
+def main():
+    """ Joining the functions. """
+    for model_id in range(1, count_models() + 1):
+        model_name_b(model_id)
+        model_unit_cell_dimensions(model_id)
+        model_spacegroup(model_id)
+        model_symmetry_operations(model_id)
+        model_atom_coordinates(model_id)
 
-    restore_model()
+        restore_model()
 
-# close pointer and database file:
-c.close()
-CONN.close()
+    # close pointer and database file:
+    C.close()
+    CONN.close()
+
+
+main()
