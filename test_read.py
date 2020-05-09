@@ -2,7 +2,7 @@
 # author:  nbehrnd@yahoo.com
 # license:
 # date:    2020-05-07 (YYYY-MM-DD)
-# edit:    2020-05-08 (YYYY-MM-DD)
+# edit:    2020-05-09 (YYYY-MM-DD)
 #
 """ Collect a selection of information of Structurefinder's database.
 
@@ -26,19 +26,44 @@ else:
     print("Without change of any data, the script closes now.\n")
     sys.exit()
 
-print("\nThis is test_read.py, attempting to extract a minimal .cif from")
-print("the .sqlite database written by the .cif Structurefinder by")
-print("Kratzert and Krossing.  It is a concept study, so features are")
-print("missing or buggy.  Deposit this Python 3 script in the same folder")
-print("as the closed .sqlite database file to work with , and run it from")
-print("the CLI.  Only standard modules Python 3 includes are used here.")
-print("\nAt any time, the program may be left with Ctrl + C.\n")
-print("Enter now the complete filename (with '.sqlite' extension) as there")
-print("is no tab-completion.")
+# Instead of using argparse:
+INPUT_FILE = ""
+if len(sys.argv) >= 2:
+    if str(sys.argv[1]) == str("-h"):
+        print("""
+This is test_read.py, to extract a minimal .cif per model entry from the
+.sqlite database written by Structurefinder (Kratzert and Krossing,
+J. Appl. Cryst. 2019, 52, 468-471).
 
-INPUT_FILE = input("Your input: ")
-CONN = sqlite3.connect(INPUT_FILE)
-C = CONN.cursor()
+Deposit this Python 3 script in the same folder as the closed (i.e., not
+concurrently accessed) .sqlite file to work with.  Retrieved data will be
+written into individual .cif files named according to the names initially
+used in the .cif files by the command of
+
+python test_read.py example.sqlite
+
+where example.sqlite is the database of interest.  This reader uses only
+modules already included in standard installations of Python 3.  At any
+time, the program may be shutdown by Ctrl + C.\n""")
+        sys.exit(0)
+
+    elif str(sys.argv[1]) == str("-v"):
+        print("\nScript test_read.py, version 0.0.7.\n")
+        sys.exit(0)
+
+    elif sys.argv[1] is not None:
+        INPUT_FILE = sys.argv[1]
+        print("Database file:", INPUT_FILE)
+
+        CONN = sqlite3.connect(INPUT_FILE)
+        C = CONN.cursor()
+
+else:
+    print("""
+Error: either parameter missing, or incorrect.  Run
+    python test_read.py -h
+for guidance.\n""")
+    sys.exit(0)
 
 
 def count_models():
