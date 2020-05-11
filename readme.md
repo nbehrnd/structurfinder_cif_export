@@ -25,14 +25,30 @@ The script does not consider additional crystallographic information
 such as site occupancy factors used to describe positional disorder,
 or anisotropic displacement parameters.
 
+Note that script restores the file name of the `.cif`, rather than
+the model name of the within the script.  This reflects that more
+often than wanted `.cif` provided as supporting information do not
+provide a (as possibly meaningful) name to the structure model, and
+publishers include in the name the `.cif` accessible e.g. a part
+of the doi of the corresponding publication.
+
+Equally note that the retrieval should be restricted to `.cif` which
+originally (i.e., when read by StructureFinder) contained only one
+single model _per file_.
+
 
 As a training, the repository contains test data.  File
 `three_data.sqlite` is a test data base written by StructureFinder
 (version 47) while accessing structure models `ACSALA01.cif`,
 `ADRENL.cif`, and `BAPLOT01.cif`; these files are part of CCDC's freely
 accessible [teaching subset](https://www.ccdc.cam.ac.uk/Community/educationalresources/teaching-database/),
-section [Drug molecules]()https://www.ccdc.cam.ac.uk/structures/search?compound=drug%20molecules), 
+section [Drug molecules](https://www.ccdc.cam.ac.uk/structures/search?compound=drug%20molecules), 
 and are copied in sub-folder `input`.
 
 Running `python sf_reader.py three_data.sqlite` restores the three
 `.cif` files deposit in sub-folder `output`.
+
+Additional paramaters the script accepts are
+
+-h    to access the help screen
+-v    to access the version information
