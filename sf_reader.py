@@ -1,6 +1,6 @@
-# name:    test_read.py
+# name:    sf_reader.py
 # author:  nbehrnd@yahoo.com
-# license:
+# license: MIT, 2020
 # date:    2020-05-07 (YYYY-MM-DD)
 # edit:    2020-05-11 (YYYY-MM-DD)
 #
@@ -10,10 +10,15 @@
     offer a bridge between the .cif managed by Daniel Kratzert's Python
     application of Structurefinder toward Thomas Sander's DataWarrior.
 
-    This script serves as proof of concept only and expects a call from
-    the CLI of Python 3 without provision of parameters.  Module sqlite3
-    is part of the standard library of Python, so 'already present' by
-    default. """
+    This script expects a call from the CLI of Python 3 with the name
+    of the .sqlite file to work with as parameter:
+
+    python sf_reader.py example.sqlite
+
+    Other permitted parameters are -h to access the help menue, and
+    -v to access the version information.  Module sqlite3, which is
+    called here, is part of the standard library of Python, so 'already
+    present' by default. """
 
 import sqlite3
 import sys
@@ -31,16 +36,16 @@ INPUT_FILE = ""
 if len(sys.argv) >= 2:
     if str(sys.argv[1]) == str("-h"):
         print("""
-This is test_read.py, to extract a minimal .cif per model entry from the
-.sqlite database written by Structurefinder (Kratzert and Krossing,
-J. Appl. Cryst. 2019, 52, 468-471).
+This is sf_reader.py, a script to extract a minimal .cif per model entry
+from the .sqlite database written by Structurefinder (Kratzert and
+Krossing, J. Appl. Cryst. 2019, 52, 468-471).
 
 Deposit this Python 3 script in the same folder as the closed (i.e., not
 concurrently accessed) .sqlite file to work with.  Retrieved data will be
 written into individual .cif files named according to the names initially
 used in the .cif files by the command of
 
-python test_read.py example.sqlite
+python sf_reader.py example.sqlite
 
 where example.sqlite is the database of interest.  This reader uses only
 modules already included in standard installations of Python 3.  At any
@@ -48,7 +53,7 @@ time, the program may be shutdown by Ctrl + C.\n""")
         sys.exit(0)
 
     elif str(sys.argv[1]) == str("-v"):
-        print("\nScript test_read.py, version 0.0.7.\n")
+        print("\nScript sf_reader.py, version 0.0.7.\n")
         sys.exit(0)
 
     elif sys.argv[1] is not None:
