@@ -2,7 +2,7 @@
 # author:  nbehrnd@yahoo.com
 # license:
 # date:    2020-05-07 (YYYY-MM-DD)
-# edit:    2020-05-09 (YYYY-MM-DD)
+# edit:    2020-05-11 (YYYY-MM-DD)
 #
 """ Collect a selection of information of Structurefinder's database.
 
@@ -80,7 +80,8 @@ def model_name_b(model_id):
     """ Determine the name of the structure entries in the set with ID. """
     global model_name
     model_name = ""
-    C.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(model_id))
+#    C.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(model_id))
+    C.execute('SELECT FILENAME FROM STRUCTURE WHERE ID={}'.format(model_id))
     data = C.fetchone()
 
     model_name = str(data)[3:-3]
@@ -89,7 +90,8 @@ def model_name_b(model_id):
     # keep track of the information retrieved from the sqlite database
     global restore_register
     restore_register = []
-    cif_model_entry = ''.join(['data_', model_name])
+#    cif_model_entry = ''.join(['data_', model_name])
+    cif_model_entry = ''.join(['data_', model_name[:-4]])
     restore_register.append(cif_model_entry)
 
 
@@ -182,7 +184,8 @@ def model_atom_coordinates(model_id):
 
 def restore_model():
     """ Write a minimal .cif file about the retrieved information. """
-    file_name = ''.join([model_name, '.cif'])
+#    file_name = ''.join([model_name, '.cif'])
+    file_name = ''.join([model_name])
     with open(file_name, mode="w") as newfile:
         for entry in restore_register:
             newfile.write("{}\n".format(entry))
