@@ -1,8 +1,8 @@
-# name:    test_read.py
+# name:    sf_reader.py
 # author:  nbehrnd@yahoo.com
-# license:
+# license: MIT, 2020
 # date:    2020-05-07 (YYYY-MM-DD)
-# edit:    2020-05-08 (YYYY-MM-DD)
+# edit:    2020-05-11 (YYYY-MM-DD)
 #
 """ Collect a selection of information of Structurefinder's database.
 
@@ -10,10 +10,15 @@
     offer a bridge between the .cif managed by Daniel Kratzert's Python
     application of Structurefinder toward Thomas Sander's DataWarrior.
 
-    This script serves as proof of concept only and expects a call from
-    the CLI of Python 3 without provision of parameters.  Module sqlite3
-    is part of the standard library of Python, so 'already present' by
-    default. """
+    This script expects a call from the CLI of Python 3 with the name
+    of the .sqlite file to work with as parameter:
+
+    python sf_reader.py example.sqlite
+
+    Other permitted parameters are -h to access the help menue, and
+    -v to access the version information.  Module sqlite3, which is
+    called here, is part of the standard library of Python, so 'already
+    present' by default. """
 
 import sqlite3
 import sys
@@ -26,19 +31,44 @@ else:
     print("Without change of any data, the script closes now.\n")
     sys.exit()
 
-print("\nThis is test_read.py, attempting to extract a minimal .cif from")
-print("the .sqlite database written by the .cif Structurefinder by")
-print("Kratzert and Krossing.  It is a concept study, so features are")
-print("missing or buggy.  Deposit this Python 3 script in the same folder")
-print("as the closed .sqlite database file to work with , and run it from")
-print("the CLI.  Only standard modules Python 3 includes are used here.")
-print("\nAt any time, the program may be left with Ctrl + C.\n")
-print("Enter now the complete filename (with '.sqlite' extension) as there")
-print("is no tab-completion.")
+# Instead of using argparse:
+INPUT_FILE = ""
+if len(sys.argv) >= 2:
+    if str(sys.argv[1]) == str("-h"):
+        print("""
+This is sf_reader.py, a script to extract a minimal .cif per model entry
+from the .sqlite database written by Structurefinder (Kratzert and
+Krossing, J. Appl. Cryst. 2019, 52, 468-471).
 
-INPUT_FILE = input("Your input: ")
-CONN = sqlite3.connect(INPUT_FILE)
-C = CONN.cursor()
+Deposit this Python 3 script in the same folder as the closed (i.e., not
+concurrently accessed) .sqlite file to work with.  Retrieved data will be
+written into individual .cif files named according to the names initially
+used in the .cif files by the command of
+
+python sf_reader.py example.sqlite
+
+where example.sqlite is the database of interest.  This reader uses only
+modules already included in standard installations of Python 3.  At any
+time, the program may be shutdown by Ctrl + C.\n""")
+        sys.exit(0)
+
+    elif str(sys.argv[1]) == str("-v"):
+        print("\nScript sf_reader.py, version 0.0.7.\n")
+        sys.exit(0)
+
+    elif sys.argv[1] is not None:
+        INPUT_FILE = sys.argv[1]
+        print("Database file:", INPUT_FILE)
+
+        CONN = sqlite3.connect(INPUT_FILE)
+        C = CONN.cursor()
+
+else:
+    print("""
+Error: either parameter missing, or incorrect.  Run
+    python test_read.py -h
+for guidance.\n""")
+    sys.exit(0)
 
 
 def count_models():
@@ -55,7 +85,8 @@ def model_name_b(model_id):
     """ Determine the name of the structure entries in the set with ID. """
     global model_name
     model_name = ""
-    C.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(model_id))
+#    C.execute('SELECT DATANAME FROM STRUCTURE WHERE ID={}'.format(model_id))
+    C.execute('SELECT FILENAME FROM STRUCTURE WHERE ID={}'.format(model_id))
     data = C.fetchone()
 
     model_name = str(data)[3:-3]
@@ -64,7 +95,8 @@ def model_name_b(model_id):
     # keep track of the information retrieved from the sqlite database
     global restore_register
     restore_register = []
-    cif_model_entry = ''.join(['data_', model_name])
+#    cif_model_entry = ''.join(['data_', model_name])
+    cif_model_entry = ''.join(['data_', model_name[:-4]])
     restore_register.append(cif_model_entry)
 
 
@@ -157,7 +189,8 @@ def model_atom_coordinates(model_id):
 
 def restore_model():
     """ Write a minimal .cif file about the retrieved information. """
-    file_name = ''.join([model_name, '.cif'])
+#    file_name = ''.join([model_name, '.cif'])
+    file_name = ''.join([model_name])
     with open(file_name, mode="w") as newfile:
         for entry in restore_register:
             newfile.write("{}\n".format(entry))

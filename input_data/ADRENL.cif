@@ -1,0 +1,93 @@
+####################################################################### 
+# 
+# This file contains crystal structure data downloaded from the 
+# Cambridge Structural Database (CSD) hosted by the Cambridge 
+# Crystallographic Data Centre (CCDC).
+# 
+# Full information about CCDC data access policies and citation 
+# guidelines are available at http://www.ccdc.cam.ac.uk/access/V1 
+# 
+# Audit and citation data items may have been added by the CCDC. 
+# Please retain this information to preserve the provenance of 
+# this file and to allow appropriate attribution of the data. 
+# 
+#######################################################################
+
+data_ADRENL
+#This CIF has been generated from an entry in the Cambridge Structural Database
+_database_code_depnum_ccdc_archive 'CCDC 1101358'
+_database_code_CSD               ADRENL
+loop_
+_citation_id
+_citation_doi
+_citation_year
+1 10.3891/acta.chem.scand.29b-0239 1975
+_audit_creation_method           'Created from the CSD'
+_audit_update_record             
+;
+2020-05-11 downloaded from the CCDC.
+;
+_database_code_NBS               500788
+_chemical_name_common            Epinephrine
+_chemical_formula_moiety         'C9 H13 N1 O3'
+_chemical_name_systematic        (-)-Adrenaline
+_chemical_properties_biological  
+'\a-adrenergic stimulant, Bronchodilator, bronchoprotector, vasoconstrictor'
+_chemical_absolute_configuration unk
+_diffrn_ambient_temperature      295
+_exptl_crystal_density_diffrn    1.33064
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt           0.053
+_refine_ls_wR_factor_gt          0.053
+_diffrn_radiation_probe          x-ray
+_symmetry_cell_setting           monoclinic
+_symmetry_space_group_name_H-M   'P 21'
+_symmetry_Int_Tables_number      4
+_space_group_name_Hall           'P 2yb'
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 -x,1/2+y,-z
+_cell_length_a                   7.873(2)
+_cell_length_b                   6.790(2)
+_cell_length_c                   8.638(2)
+_cell_angle_alpha                90
+_cell_angle_beta                 98.02(2)
+_cell_angle_gamma                90
+_cell_volume                     457.251
+_cell_formula_units_Z            2
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+C1 C -0.18430 0.20550 0.41300
+C2 C -0.09080 0.27690 0.55090
+C3 C -0.13910 0.23900 0.69720
+C4 C -0.28720 0.12660 0.70180
+C5 C -0.37950 0.05040 0.56610
+C6 C -0.32710 0.09040 0.42360
+C7 C -0.13200 0.26420 0.25850
+C8 C -0.23960 0.43690 0.19240
+C9 C -0.31240 0.63540 -0.04900
+H11 H -0.14200 0.43000 -0.01400
+H12 H -0.08000 0.60400 0.09100
+H2 H 0.00600 0.34800 0.54900
+H22 H -0.27800 0.11100 0.90900
+H23 H -0.08300 0.03400 0.16900
+H5 H -0.47200 -0.02600 0.57100
+H6 H -0.39000 0.03700 0.33700
+H7 H -0.00600 0.30600 0.27200
+H8 H -0.24300 0.55300 0.26500
+H81 H -0.35900 0.39600 0.16900
+H9 H -0.26400 0.69300 -0.13800
+H91 H -0.35200 0.73700 0.00600
+H92 H -0.40300 0.55000 -0.09100
+N1 N -0.17870 0.52300 0.05100
+O1 O -0.04780 0.30120 0.83180
+O2 O -0.34460 0.08760 0.84170
+O3 O -0.15770 0.11370 0.14230
+
+#END
